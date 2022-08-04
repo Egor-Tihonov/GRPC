@@ -1,0 +1,64 @@
+syntax = "proto3";
+option go_package = ".";
+
+
+ service CRUD{
+  rpc Registration(RegistrationRequest)returns(RegistrationResponse){};
+  rpc GetUser(GetUserRequest)returns(GetUserResponse){};
+  rpc GetAllUsers(GetAllUsersRequest)returns(stream Person);
+  rpc DeleteUser(DeleteUserRequest)returns(Response);
+  rpc UpdateUser(UpdateUserRequest)returns(Response);
+  rpc Authentication(AuthenticationRequest)returns(Response);
+
+ }
+
+
+message GetAllUsersRequest{ }
+
+message RegistrationRequest{
+  string name = 2;
+  int32 age = 3;
+  bool works = 4;
+  string password = 5;
+}
+
+message UpdateUserRequest{
+   Person person = 1;
+   string id = 2;
+}
+
+message AuthenticationRequest{
+   string password = 1;
+   string id = 2;
+}
+
+message GetUserRequest{
+  string id = 1;
+}
+
+message DeleteUserRequest{
+  string id = 1;
+}
+
+message GetUserResponse{
+  Person person = 1;
+}
+
+message RegistrationResponse{
+  string id = 1;
+}
+
+message GetAllUsersResponse{
+  Person person = 1;
+}
+
+message Response{}
+
+message Person{
+  string id = 1;
+  string name = 2;
+  int32 age = 3;
+  bool works = 4;
+  string password = 5;
+}
+
