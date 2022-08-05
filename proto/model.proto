@@ -8,13 +8,17 @@ option go_package = ".";
   rpc GetAllUsers(GetAllUsersRequest)returns(stream Person);
   rpc DeleteUser(DeleteUserRequest)returns(Response);
   rpc UpdateUser(UpdateUserRequest)returns(Response);
-  rpc Authentication(AuthenticationRequest)returns(Response);
-
+  rpc Authentication(AuthenticationRequest)returns(AuthenticationResponse);
+  rpc RefreshMyTokens(RefreshTokensRequest)returns(RefreshTokensResponse);
+  rpc Logout(LogoutRequest)returns(Response);
  }
 
 
 message GetAllUsersRequest{ }
-
+message LogoutRequest{
+   string accessToken=1;
+   string id=2;
+}
 message RegistrationRequest{
   string name = 2;
   int32 age = 3;
@@ -23,21 +27,33 @@ message RegistrationRequest{
 }
 
 message UpdateUserRequest{
-   Person person = 1;
-   string id = 2;
+  string accessToken = 1;
+   Person person = 2;
+   string id = 3;
 }
 
 message AuthenticationRequest{
-   string password = 1;
-   string id = 2;
+   string id = 1;
+   string password = 2;
+
+}
+
+message RefreshTokensRequest{
+   string refreshToken = 1;
+}
+message RefreshTokensResponse{
+  string refreshToken = 1;
+  string accessToken = 2;
 }
 
 message GetUserRequest{
-  string id = 1;
+  string accessToken = 1;
+  string id = 2;
 }
 
 message DeleteUserRequest{
-  string id = 1;
+  string accessToken = 1;
+  string id = 2;
 }
 
 message GetUserResponse{
@@ -50,6 +66,11 @@ message RegistrationResponse{
 
 message GetAllUsersResponse{
   Person person = 1;
+}
+
+message AuthenticationResponse{
+   string accessToken = 1;
+   string refreshToken = 2;
 }
 
 message Response{}

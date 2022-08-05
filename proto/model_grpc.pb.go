@@ -27,7 +27,9 @@ type CRUDClient interface {
 	GetAllUsers(ctx context.Context, in *GetAllUsersRequest, opts ...grpc.CallOption) (CRUD_GetAllUsersClient, error)
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*Response, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*Response, error)
-	Authentication(ctx context.Context, in *AuthenticationRequest, opts ...grpc.CallOption) (*Response, error)
+	Authentication(ctx context.Context, in *AuthenticationRequest, opts ...grpc.CallOption) (*AuthenticationResponse, error)
+	RefreshMyTokens(ctx context.Context, in *RefreshTokensRequest, opts ...grpc.CallOption) (*RefreshTokensResponse, error)
+	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*Response, error)
 }
 
 type cRUDClient struct {
@@ -106,9 +108,27 @@ func (c *cRUDClient) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts
 	return out, nil
 }
 
-func (c *cRUDClient) Authentication(ctx context.Context, in *AuthenticationRequest, opts ...grpc.CallOption) (*Response, error) {
-	out := new(Response)
+func (c *cRUDClient) Authentication(ctx context.Context, in *AuthenticationRequest, opts ...grpc.CallOption) (*AuthenticationResponse, error) {
+	out := new(AuthenticationResponse)
 	err := c.cc.Invoke(ctx, "/CRUD/Authentication", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *cRUDClient) RefreshMyTokens(ctx context.Context, in *RefreshTokensRequest, opts ...grpc.CallOption) (*RefreshTokensResponse, error) {
+	out := new(RefreshTokensResponse)
+	err := c.cc.Invoke(ctx, "/CRUD/RefreshMyTokens", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *cRUDClient) Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, "/CRUD/Logout", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -124,7 +144,9 @@ type CRUDServer interface {
 	GetAllUsers(*GetAllUsersRequest, CRUD_GetAllUsersServer) error
 	DeleteUser(context.Context, *DeleteUserRequest) (*Response, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*Response, error)
-	Authentication(context.Context, *AuthenticationRequest) (*Response, error)
+	Authentication(context.Context, *AuthenticationRequest) (*AuthenticationResponse, error)
+	RefreshMyTokens(context.Context, *RefreshTokensRequest) (*RefreshTokensResponse, error)
+	Logout(context.Context, *LogoutRequest) (*Response, error)
 	mustEmbedUnimplementedCRUDServer()
 }
 
@@ -147,8 +169,14 @@ func (UnimplementedCRUDServer) DeleteUser(context.Context, *DeleteUserRequest) (
 func (UnimplementedCRUDServer) UpdateUser(context.Context, *UpdateUserRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
 }
-func (UnimplementedCRUDServer) Authentication(context.Context, *AuthenticationRequest) (*Response, error) {
+func (UnimplementedCRUDServer) Authentication(context.Context, *AuthenticationRequest) (*AuthenticationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Authentication not implemented")
+}
+func (UnimplementedCRUDServer) RefreshMyTokens(context.Context, *RefreshTokensRequest) (*RefreshTokensResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RefreshMyTokens not implemented")
+}
+func (UnimplementedCRUDServer) Logout(context.Context, *LogoutRequest) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
 }
 func (UnimplementedCRUDServer) mustEmbedUnimplementedCRUDServer() {}
 
@@ -274,6 +302,42 @@ func _CRUD_Authentication_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CRUD_RefreshMyTokens_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RefreshTokensRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CRUDServer).RefreshMyTokens(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/CRUD/RefreshMyTokens",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CRUDServer).RefreshMyTokens(ctx, req.(*RefreshTokensRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CRUD_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LogoutRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CRUDServer).Logout(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/CRUD/Logout",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CRUDServer).Logout(ctx, req.(*LogoutRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CRUD_ServiceDesc is the grpc.ServiceDesc for CRUD service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -300,6 +364,14 @@ var CRUD_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Authentication",
 			Handler:    _CRUD_Authentication_Handler,
+		},
+		{
+			MethodName: "RefreshMyTokens",
+			Handler:    _CRUD_RefreshMyTokens_Handler,
+		},
+		{
+			MethodName: "Logout",
+			Handler:    _CRUD_Logout_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

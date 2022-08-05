@@ -46,13 +46,13 @@ func (p *PRepository) GetAllUsers(ctx context.Context) ([]*model.Person, error) 
 	}
 	defer rows.Close()
 	for rows.Next() {
-		p := model.Person{}
-		err := rows.Scan(&p.ID, &p.Name, &p.Works, &p.Age)
+		per := model.Person{}
+		err = rows.Scan(&per.ID, &per.Name, &per.Works, &per.Age)
 		if err != nil {
 			log.Errorf("database error with select all users, %v", err)
 			return nil, err
 		}
-		persons = append(persons, &p)
+		persons = append(persons, &per)
 	}
 
 	return persons, nil
