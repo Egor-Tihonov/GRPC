@@ -1,3 +1,4 @@
+// Package repository a
 package repository
 
 import (
@@ -5,6 +6,7 @@ import (
 	"context"
 )
 
+// Repository transition to mongo or postgres db
 type Repository interface {
 	CreateUser(ctx context.Context, p model.Person) (string, error)
 	GetUserByID(ctx context.Context, idPerson string) (*model.Person, error)

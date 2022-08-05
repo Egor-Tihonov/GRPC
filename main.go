@@ -1,39 +1,56 @@
 package main
 
 import (
+	"awesomeProjectGRPC/internal/model"
 	"awesomeProjectGRPC/internal/repository"
 	"awesomeProjectGRPC/internal/server"
+	"awesomeProjectGRPC/internal/service"
 	pb "awesomeProjectGRPC/proto"
 	"context"
+	"github.com/caarlos0/env/v6"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/labstack/gommon/log"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
-
 	"net"
 )
 
-var poolP pgxpool.Pool
+var (
+	poolP pgxpool.Pool
+	poolM mongo.Client
+)
 
 func main() {
-	conn := DBConnection("postgres")
-	defer poolP.Close()
-	ns := grpc.NewServer()
-	srv := server.NewServer(conn)
-	pb.RegisterCRUDServer(ns, srv)
-	listen, err := net.Listen("tcp", ":50051")
+	cfg := model.Config{}
+	err := env.Parse(&cfg)
 	if err != nil {
-		log.Fatalf("error while listening port: %e", err)
+		log.Fatalf("failed to start service, %e", err)
+	}
+	conn := DBConnection(&cfg)
+	defer func() {
+		poolP.Close()
+		if err = poolM.Disconnect(context.Background()); err != nil {
+			log.Errorf("cannot disconnect with mongodb")
+		}
+	}()
+	ns := grpc.NewServer()
+	newService := service.NewService(conn, cfg.JwtKey)
+	srv := server.NewServer(newService)
+	pb.RegisterCRUDServer(ns, srv)
+	listen, err := net.Listen("tcp", "localhost:50051")
+	if err != nil {
+		defer log.Fatalf("error while listening port: %e", err)
 	}
 	log.Print("success listen server, port 50051")
 	if err = ns.Serve(listen); err != nil {
-		log.Fatalf("error while listening server: %e", err)
+		defer log.Fatalf("error while listening server: %e", err)
 	}
-
 }
-func DBConnection(dbName string) repository.Repository {
-	switch dbName {
+
+// DBConnection create connection with db
+func DBConnection(cfg *model.Config) repository.Repository {
+	switch cfg.CurrentDB {
 	case "postgres":
 		poolP, err := pgxpool.Connect(context.Background() /*cfg.PostgresDbUrl */, "postgresql://postgres:123@localhost:5432/person")
 		if err != nil {

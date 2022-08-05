@@ -21,6 +21,12 @@ message LogoutRequest{
    string id=2;
 }
 
+message UpdateUserRequest{
+  string accessToken = 1;
+  Person person = 2;
+  string id = 3;
+}
+
 message RegistrationRequest{
   string name = 2;
   int32 age = 3;
@@ -28,11 +34,7 @@ message RegistrationRequest{
   string password = 5;
 }
 
-message UpdateUserRequest{
-  string accessToken = 1;
-   Person person = 2;
-   string id = 3;
-}
+
 
 message AuthenticationRequest{
    string id = 1;
