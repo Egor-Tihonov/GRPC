@@ -22,8 +22,14 @@ var (
 )
 
 func main() {
-	cfg := model.Config{}
-	err := env.Parse(&cfg)
+	listen, err := net.Listen("tcp", "localhost:50051")
+	if err != nil {
+		defer log.Fatalf("error while listening port: %e", err)
+	}
+	log.Print("success listen server, port 50051")
+	key := []byte("super-key")
+	cfg := model.Config{JwtKey: key}
+	err = env.Parse(&cfg)
 	if err != nil {
 		log.Fatalf("failed to start service, %e", err)
 	}
@@ -38,11 +44,10 @@ func main() {
 	newService := service.NewService(conn, cfg.JwtKey)
 	srv := server.NewServer(newService)
 	pb.RegisterCRUDServer(ns, srv)
-	listen, err := net.Listen("tcp", "localhost:50051")
-	if err != nil {
-		defer log.Fatalf("error while listening port: %e", err)
+	if err = ns.Serve(listen); err != nil {
+		log.Fatalf("Failed to serve: %v", err)
 	}
-	log.Print("success listen server, port 50051")
+
 	if err = ns.Serve(listen); err != nil {
 		defer log.Fatalf("error while listening server: %e", err)
 	}

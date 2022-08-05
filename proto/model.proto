@@ -14,7 +14,7 @@ option go_package = ".";
  }
 
 
-message GetAllUsersRequest{ }
+message GetAllUsersRequest{}
 
 message LogoutRequest{
    string accessToken=1;
