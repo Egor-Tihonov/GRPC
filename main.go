@@ -1,11 +1,11 @@
 package main
 
 import (
-	"awesomeProjectGRPC/internal/model"
-	"awesomeProjectGRPC/internal/repository"
-	"awesomeProjectGRPC/internal/server"
-	"awesomeProjectGRPC/internal/service"
-	pb "awesomeProjectGRPC/proto"
+	"github.com/Egor-Tihonov/GRPC/internal/model"
+	"github.com/Egor-Tihonov/GRPC/internal/repository"
+	"github.com/Egor-Tihonov/GRPC/internal/server"
+	"github.com/Egor-Tihonov/GRPC/internal/service"
+	pb "github.com/Egor-Tihonov/GRPC/proto"
 	"fmt"
 
 	"context"
