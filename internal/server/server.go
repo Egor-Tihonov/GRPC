@@ -13,11 +13,12 @@ type Server struct {
 	rps repository.Repository
 }
 
+var JwtKey = []byte("super-key")
+
 var (
 	AccessTokenWorkTime  = time.Now().Add(time.Minute * 5).Unix()
 	RefreshTokenWorkTime = time.Now().Add(time.Hour * 3).Unix()
 )
-var JwtKey = []byte("super-key")
 
 func NewServer(pool repository.Repository) *Server {
 	return &Server{rps: pool}

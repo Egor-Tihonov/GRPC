@@ -11,6 +11,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+//Authentication login
 func (s *Server) Authentication(ctx context.Context, request *pb.AuthenticationRequest) (*pb.AuthenticationResponse, error) {
 	authUser, err := s.rps.GetUserByID(ctx, request.Id)
 	if err != nil {

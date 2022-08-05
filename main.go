@@ -32,8 +32,8 @@ func main() {
 	}
 
 }
-func DBConnection(dbname string) repository.Repository {
-	switch dbname {
+func DBConnection(dbName string) repository.Repository {
+	switch dbName {
 	case "postgres":
 		poolP, err := pgxpool.Connect(context.Background() /*cfg.PostgresDbUrl */, "postgresql://postgres:123@localhost:5432/person")
 		if err != nil {

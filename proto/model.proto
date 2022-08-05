@@ -15,10 +15,12 @@ option go_package = ".";
 
 
 message GetAllUsersRequest{ }
+
 message LogoutRequest{
    string accessToken=1;
    string id=2;
 }
+
 message RegistrationRequest{
   string name = 2;
   int32 age = 3;

@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// MRepository create connection with MongoDB
+// MRepository create connection with MongoD
 type MRepository struct {
 	Pool *mongo.Client
 }
