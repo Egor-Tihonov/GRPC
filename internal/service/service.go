@@ -4,6 +4,7 @@ package service
 import (
 	"awesomeProjectGRPC/internal/model"
 	"awesomeProjectGRPC/internal/repository"
+
 	"context"
 )
 
@@ -24,8 +25,8 @@ func (se *Service) GetUser(ctx context.Context, id string) (*model.Person, error
 }
 
 // GetAllUsers _
-func (se *Service) GetAllUsers() ([]*model.Person, error) {
-	return se.rps.GetAllUsers(context.Background())
+func (se *Service) GetAllUsers(ctx context.Context) ([]*model.Person, error) {
+	return se.rps.GetAllUsers(ctx)
 }
 
 // DeleteUser _

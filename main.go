@@ -6,13 +6,19 @@ import (
 	"awesomeProjectGRPC/internal/server"
 	"awesomeProjectGRPC/internal/service"
 	pb "awesomeProjectGRPC/proto"
+	"fmt"
+
 	"context"
+
 	"github.com/caarlos0/env/v6"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/labstack/gommon/log"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
 	"google.golang.org/grpc"
+
 	"net"
 )
 
@@ -26,7 +32,7 @@ func main() {
 	if err != nil {
 		defer log.Fatalf("error while listening port: %e", err)
 	}
-	log.Print("success listen server, port 50051")
+	fmt.Println("Server successfully started on port :50051...")
 	key := []byte("super-key")
 	cfg := model.Config{JwtKey: key}
 	err = env.Parse(&cfg)
@@ -34,6 +40,7 @@ func main() {
 		log.Fatalf("failed to start service, %e", err)
 	}
 	conn := DBConnection(&cfg)
+	fmt.Println("DB successfully connect...")
 	defer func() {
 		poolP.Close()
 		if err = poolM.Disconnect(context.Background()); err != nil {
@@ -44,9 +51,6 @@ func main() {
 	newService := service.NewService(conn, cfg.JwtKey)
 	srv := server.NewServer(newService)
 	pb.RegisterCRUDServer(ns, srv)
-	if err = ns.Serve(listen); err != nil {
-		log.Fatalf("Failed to serve: %v", err)
-	}
 
 	if err = ns.Serve(listen); err != nil {
 		defer log.Fatalf("error while listening server: %e", err)

@@ -5,8 +5,8 @@ import (
 	"awesomeProjectGRPC/internal/model"
 	"awesomeProjectGRPC/internal/service"
 	pb "awesomeProjectGRPC/proto"
+
 	"context"
-	"github.com/labstack/gommon/log"
 )
 
 // Server struct
@@ -44,25 +44,21 @@ func (s *Server) GetUser(ctx context.Context, request *pb.GetUserRequest) (*pb.G
 }
 
 // GetAllUsers get all users from db
-func (s *Server) GetAllUsers(in *pb.GetAllUsersRequest, stream pb.CRUD_GetAllUsersServer) error {
-	log.Printf("Received: %v", in)
-	persons, err := s.se.GetAllUsers()
-	var personProto pb.Person
+func (s *Server) GetAllUsers(ctx context.Context, _ *pb.GetAllUsersRequest) (*pb.GetAllUsersResponse, error) {
+	persons, err := s.se.GetAllUsers(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
-
+	var list []*pb.Person
 	for _, person := range persons {
+		personProto := new(pb.Person)
 		personProto.Id = person.ID
 		personProto.Name = person.Name
 		personProto.Age = person.Age
 		personProto.Works = person.Works
-		err = stream.Send(&personProto)
-		if err != nil {
-			return err
-		}
+		list = append(list, personProto)
 	}
-	return nil
+	return &pb.GetAllUsersResponse{Persons: list}, nil
 }
 
 // DeleteUser delete user by id

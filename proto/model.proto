@@ -5,7 +5,7 @@ option go_package = ".";
  service CRUD{
   rpc Registration(RegistrationRequest)returns(RegistrationResponse){};
   rpc GetUser(GetUserRequest)returns(GetUserResponse){};
-  rpc GetAllUsers(GetAllUsersRequest)returns(stream Person);
+  rpc GetAllUsers(GetAllUsersRequest)returns(GetAllUsersResponse);
   rpc DeleteUser(DeleteUserRequest)returns(Response);
   rpc UpdateUser(UpdateUserRequest)returns(Response);
   rpc Authentication(AuthenticationRequest)returns(AuthenticationResponse);
@@ -69,7 +69,7 @@ message RegistrationResponse{
 }
 
 message GetAllUsersResponse{
-  Person person = 1;
+  repeated Person persons = 1;
 }
 
 message AuthenticationResponse{

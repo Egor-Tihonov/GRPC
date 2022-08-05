@@ -24,7 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type CRUDClient interface {
 	Registration(ctx context.Context, in *RegistrationRequest, opts ...grpc.CallOption) (*RegistrationResponse, error)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
-	GetAllUsers(ctx context.Context, in *GetAllUsersRequest, opts ...grpc.CallOption) (CRUD_GetAllUsersClient, error)
+	GetAllUsers(ctx context.Context, in *GetAllUsersRequest, opts ...grpc.CallOption) (*GetAllUsersResponse, error)
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*Response, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*Response, error)
 	Authentication(ctx context.Context, in *AuthenticationRequest, opts ...grpc.CallOption) (*AuthenticationResponse, error)
@@ -58,36 +58,13 @@ func (c *cRUDClient) GetUser(ctx context.Context, in *GetUserRequest, opts ...gr
 	return out, nil
 }
 
-func (c *cRUDClient) GetAllUsers(ctx context.Context, in *GetAllUsersRequest, opts ...grpc.CallOption) (CRUD_GetAllUsersClient, error) {
-	stream, err := c.cc.NewStream(ctx, &CRUD_ServiceDesc.Streams[0], "/CRUD/GetAllUsers", opts...)
+func (c *cRUDClient) GetAllUsers(ctx context.Context, in *GetAllUsersRequest, opts ...grpc.CallOption) (*GetAllUsersResponse, error) {
+	out := new(GetAllUsersResponse)
+	err := c.cc.Invoke(ctx, "/CRUD/GetAllUsers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &cRUDGetAllUsersClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type CRUD_GetAllUsersClient interface {
-	Recv() (*Person, error)
-	grpc.ClientStream
-}
-
-type cRUDGetAllUsersClient struct {
-	grpc.ClientStream
-}
-
-func (x *cRUDGetAllUsersClient) Recv() (*Person, error) {
-	m := new(Person)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
+	return out, nil
 }
 
 func (c *cRUDClient) DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*Response, error) {
@@ -141,7 +118,7 @@ func (c *cRUDClient) Logout(ctx context.Context, in *LogoutRequest, opts ...grpc
 type CRUDServer interface {
 	Registration(context.Context, *RegistrationRequest) (*RegistrationResponse, error)
 	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
-	GetAllUsers(*GetAllUsersRequest, CRUD_GetAllUsersServer) error
+	GetAllUsers(context.Context, *GetAllUsersRequest) (*GetAllUsersResponse, error)
 	DeleteUser(context.Context, *DeleteUserRequest) (*Response, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*Response, error)
 	Authentication(context.Context, *AuthenticationRequest) (*AuthenticationResponse, error)
@@ -160,8 +137,8 @@ func (UnimplementedCRUDServer) Registration(context.Context, *RegistrationReques
 func (UnimplementedCRUDServer) GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
-func (UnimplementedCRUDServer) GetAllUsers(*GetAllUsersRequest, CRUD_GetAllUsersServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetAllUsers not implemented")
+func (UnimplementedCRUDServer) GetAllUsers(context.Context, *GetAllUsersRequest) (*GetAllUsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllUsers not implemented")
 }
 func (UnimplementedCRUDServer) DeleteUser(context.Context, *DeleteUserRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
@@ -227,25 +204,22 @@ func _CRUD_GetUser_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CRUD_GetAllUsers_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(GetAllUsersRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
+func _CRUD_GetAllUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllUsersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
 	}
-	return srv.(CRUDServer).GetAllUsers(m, &cRUDGetAllUsersServer{stream})
-}
-
-type CRUD_GetAllUsersServer interface {
-	Send(*Person) error
-	grpc.ServerStream
-}
-
-type cRUDGetAllUsersServer struct {
-	grpc.ServerStream
-}
-
-func (x *cRUDGetAllUsersServer) Send(m *Person) error {
-	return x.ServerStream.SendMsg(m)
+	if interceptor == nil {
+		return srv.(CRUDServer).GetAllUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/CRUD/GetAllUsers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CRUDServer).GetAllUsers(ctx, req.(*GetAllUsersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _CRUD_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -354,6 +328,10 @@ var CRUD_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CRUD_GetUser_Handler,
 		},
 		{
+			MethodName: "GetAllUsers",
+			Handler:    _CRUD_GetAllUsers_Handler,
+		},
+		{
 			MethodName: "DeleteUser",
 			Handler:    _CRUD_DeleteUser_Handler,
 		},
@@ -374,12 +352,6 @@ var CRUD_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CRUD_Logout_Handler,
 		},
 	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "GetAllUsers",
-			Handler:       _CRUD_GetAllUsers_Handler,
-			ServerStreams: true,
-		},
-	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "proto/model.proto",
 }
