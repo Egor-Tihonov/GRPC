@@ -2,7 +2,7 @@
 package repository
 
 import (
-	"awesomeProjectGRPC/internal/model"
+	"github.com/Egor-Tihonov/GRPC/internal/model"
 	"context"
 	"fmt"
 

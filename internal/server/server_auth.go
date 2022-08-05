@@ -2,8 +2,8 @@
 package server
 
 import (
-	"awesomeProjectGRPC/internal/model"
-	pb "awesomeProjectGRPC/proto"
+	"github.com/Egor-Tihonov/GRPC/internal/model"
+	pb "github.com/Egor-Tihonov/GRPC/proto"
 	"context"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
