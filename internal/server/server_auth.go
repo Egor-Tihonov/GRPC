@@ -2,10 +2,10 @@
 package server
 
 import (
-	"github.com/Egor-Tihonov/GRPC/internal/model"
-	pb "github.com/Egor-Tihonov/GRPC/proto"
 	"context"
 	"fmt"
+	"github.com/Egor-Tihonov/GRPC/internal/model"
+	pb "github.com/Egor-Tihonov/GRPC/proto"
 	"golang.org/x/crypto/bcrypt"
 )
 

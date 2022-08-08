@@ -1,4 +1,4 @@
-module awesomeProjectGRPC
+module github.com/Egor-Tihonov/GRPC
 
 go 1.18
 

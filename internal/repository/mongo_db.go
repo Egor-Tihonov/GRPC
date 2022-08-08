@@ -2,9 +2,9 @@
 package repository
 
 import (
-	"github.com/Egor-Tihonov/GRPC/internal/model"
 	"context"
 	"fmt"
+	"github.com/Egor-Tihonov/GRPC/internal/model"
 
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"

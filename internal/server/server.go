@@ -2,9 +2,9 @@
 package server
 
 import (
-	"awesomeProjectGRPC/internal/model"
-	"awesomeProjectGRPC/internal/service"
-	pb "awesomeProjectGRPC/proto"
+	"github.com/Egor-Tihonov/GRPC/internal/model"
+	"github.com/Egor-Tihonov/GRPC/internal/service"
+	pb "github.com/Egor-Tihonov/GRPC/proto"
 
 	"context"
 )

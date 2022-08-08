@@ -2,8 +2,8 @@
 package service
 
 import (
-	"awesomeProjectGRPC/internal/model"
-	"awesomeProjectGRPC/internal/repository"
+	"github.com/Egor-Tihonov/GRPC/internal/model"
+	"github.com/Egor-Tihonov/GRPC/internal/repository"
 
 	"context"
 )

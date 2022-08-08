@@ -2,10 +2,10 @@
 package service
 
 import (
-	"github.com/Egor-Tihonov/GRPC/internal/model"
-	"github.com/Egor-Tihonov/GRPC/internal/repository"
 	"context"
 	"fmt"
+	"github.com/Egor-Tihonov/GRPC/internal/model"
+	"github.com/Egor-Tihonov/GRPC/internal/repository"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/gommon/log"
 	"golang.org/x/crypto/bcrypt"
