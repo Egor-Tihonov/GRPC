@@ -1,0 +1,17 @@
+version: '3'
+services:
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=person
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123
+  web:
+    build: .
+    command: [ "./GRPC", "db:5432", "--", "go", "run", "main.go" ]
+    volumes:
+        - .:/WD
+    ports:
+        - "8000:8000"
+    depends_on:
+        - db
