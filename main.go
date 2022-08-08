@@ -61,9 +61,9 @@ func main() {
 func DBConnection(cfg *model.Config) repository.Repository {
 	switch cfg.CurrentDB {
 	case "postgres":
-		poolP, err := pgxpool.Connect(context.Background() /*cfg.PostgresDbUrl */, "postgresql://postgres:123@localhost:5432/person")
+		poolP, err := pgxpool.Connect(context.Background(), cfg.PostgresDBURL)
 		if err != nil {
-			log.Errorf("bad connection with postgresql: %v", err)
+			log.Fatalf("bad connection with postgresql: %v", err)
 			return nil
 		}
 		return &repository.PRepository{Pool: poolP}
@@ -71,7 +71,7 @@ func DBConnection(cfg *model.Config) repository.Repository {
 	case "mongo":
 		poolM, err := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://127.0.0.1:27017"))
 		if err != nil {
-			log.Errorf("bad connection with mongoDb: %v", err)
+			log.Fatalf("bad connection with mongoDb: %v", err)
 			return nil
 		}
 		return &repository.MRepository{Pool: poolM}
