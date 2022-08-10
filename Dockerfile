@@ -1,2 +1,7 @@
-FROM golang:onbuild
-EXPOSE 8080
+FROM golang:latest
+
+WORKDIR /GRPC
+
+COPY . .
+
+CMD ["./main"]

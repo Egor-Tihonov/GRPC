@@ -61,7 +61,7 @@ func main() {
 func DBConnection(cfg *model.Config) repository.Repository {
 	switch cfg.CurrentDB {
 	case "postgres":
-		poolP, err := pgxpool.Connect(context.Background() /*cfg.PostgresDbUrl */, "postgresql://postgres:123@db:5432/person")
+		poolP, err := pgxpool.Connect(context.Background(), cfg.PostgresDBURL /*, "postgresql://postgres:123@localhost:5432/person"*/)
 		if err != nil {
 			log.Fatalf("bad connection with postgresql: %v", err)
 			return nil

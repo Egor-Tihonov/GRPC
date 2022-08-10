@@ -1,0 +1,5 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/egortihonov/GRPC'
+make: 'migrate' is up to date.
+make: Leaving directory '/home/egortihonov/GRPC'
+ 

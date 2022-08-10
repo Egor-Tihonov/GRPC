@@ -2,16 +2,27 @@ version: '3'
 services:
   db:
     image: postgres:latest
+    container_name: postgres
+    ports:
+      - "8001:5432"
     environment:
       - POSTGRES_DB=person
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123
+    networks:
+      - fullstack
+    
   web:
-    build: .
-    command: [ "./GRPC", "db:5432", "--", "go", "run", "main.go" ]
-    volumes:
-        - .:/WD
-    ports:
-        - "8000:8000"
+    container_name: GRPC
+    build: 
+      context: .
+    environment:
+      - POSTGRES_DB_URL=postgresql://postgres:123@postgres:5432/person
     depends_on:
         - db
+    networks:
+      - fullstack
+
+networks:
+  fullstack:
+    driver: bridge
