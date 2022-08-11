@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/Egor-Tihonov/GRPC/internal/model"
 	"github.com/Egor-Tihonov/GRPC/internal/repository"
 	"github.com/Egor-Tihonov/GRPC/internal/server"
@@ -55,13 +56,15 @@ func main() {
 	if err = ns.Serve(listen); err != nil {
 		defer log.Fatalf("error while listening server: %e", err)
 	}
+
 }
 
 // DBConnection create connection with db
 func DBConnection(cfg *model.Config) repository.Repository {
 	switch cfg.CurrentDB {
 	case "postgres":
-		poolP, err := pgxpool.Connect(context.Background(), cfg.PostgresDBURL /*, "postgresql://postgres:123@localhost:5432/person"*/)
+		log.Info(cfg.PostgresDBURL)
+		poolP, err := pgxpool.Connect(context.Background(), cfg.PostgresDBURL) // "postgresql://postgres:123@localhost:5432/person"
 		if err != nil {
 			log.Fatalf("bad connection with postgresql: %v", err)
 			return nil

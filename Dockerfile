@@ -1,6 +1,6 @@
 FROM golang:latest
 
-WORKDIR /GRPC
+WORKDIR /
 
 COPY . .
 

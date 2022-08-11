@@ -21,6 +21,9 @@ type PRepository struct {
 // CreateUser add user to db
 func (p *PRepository) CreateUser(ctx context.Context, person model.Person) (string, error) {
 	newID := uuid.New().String()
+	if person.Age < 0 || person.Age > 200 {
+		return "", fmt.Errorf("database error with create user: age less then 0 or more then 200")
+	}
 	_, err := p.Pool.Exec(ctx, "insert into persons(id,name,works,age,password) values($1,$2,$3,$4,$5)",
 		newID, &person.Name, &person.Works, &person.Age, &person.Password)
 	if err != nil {
@@ -86,6 +89,9 @@ func (p *PRepository) DeleteUser(ctx context.Context, id string) error {
 // UpdateUser update parameters for user
 func (p *PRepository) UpdateUser(ctx context.Context, id string, per *model.Person) error {
 	a, err := p.Pool.Exec(ctx, "update persons set name=$1,works=$2,age=$3 where id=$4", &per.Name, &per.Works, &per.Age, id)
+	if per.Age < 0 || per.Age > 200 {
+		return fmt.Errorf("database error with create user: age less then 0 or more then 200")
+	}
 	if a.RowsAffected() == 0 {
 		return fmt.Errorf("user with this id doesnt exist")
 	}
