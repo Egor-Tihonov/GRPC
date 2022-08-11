@@ -1,28 +1,22 @@
 version: '3'
 services:
-  db:
+  postgres:
     image: postgres:latest
     container_name: postgres
     ports:
-      - "8001:5432"
+      - "5432:5432"
     environment:
       - POSTGRES_DB=person
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123
-    networks:
-      - fullstack
     
   web:
     container_name: GRPC
     build: 
       context: .
+    ports:
+      - "50051:50051"
     environment:
-      - POSTGRES_DB_URL=postgresql://postgres:123@postgres:5432/person
+      - POSTGRES_DB_URL=postgres://postgres:123@postgres:5432/person?sslmode=disable
     depends_on:
-        - db
-    networks:
-      - fullstack
-
-networks:
-  fullstack:
-    driver: bridge
+        - postgres
