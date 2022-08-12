@@ -4,6 +4,7 @@ package server
 import (
 	"context"
 	"fmt"
+
 	"github.com/Egor-Tihonov/GRPC/internal/model"
 	pb "github.com/Egor-Tihonov/GRPC/proto"
 	"golang.org/x/crypto/bcrypt"
@@ -36,7 +37,7 @@ func (s *Server) Registration(ctx context.Context, request *pb.RegistrationReque
 		Age:      request.Age,
 		Password: request.Password,
 	}
-	newID, err := s.se.CreateUser(ctx, p)
+	newID, err := s.se.CreateUser(ctx, &p)
 	if err != nil {
 		return nil, err
 	}

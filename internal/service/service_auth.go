@@ -4,12 +4,13 @@ package service
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/Egor-Tihonov/GRPC/internal/model"
 	"github.com/Egor-Tihonov/GRPC/internal/repository"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/gommon/log"
 	"golang.org/x/crypto/bcrypt"
-	"time"
 )
 
 // AccessTokenWorkTime RefreshTokenWorkTime duration time
@@ -39,7 +40,12 @@ func (se *Service) Authentication(ctx context.Context, id, password string) (acc
 }
 
 // CreateUser create new user, add him to db
-func (se *Service) CreateUser(ctx context.Context, p model.Person) (string, error) {
+func (se *Service) CreateUser(ctx context.Context, p *model.Person) (string, error) {
+	hashedPassword, err := hashingPassword(p.Password)
+	if err != nil {
+		return "", err
+	}
+	p.Password = hashedPassword
 	return se.rps.CreateUser(ctx, p)
 }
 
@@ -118,4 +124,18 @@ func (se *Service) Verify(accessTokenString string) error {
 		return fmt.Errorf("service: expired refresh token")
 	}
 	return nil
+}
+
+// hashingPassword _
+func hashingPassword(password string) (string, error) {
+	if len(password) < 5 || len(password) > 30 {
+		return "", fmt.Errorf("password is too short or too long")
+	}
+	bytesPassword := []byte(password)
+	hashedBytesPassword, err := bcrypt.GenerateFromPassword(bytesPassword, bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	hashPassword := string(hashedBytesPassword)
+	return hashPassword, nil
 }

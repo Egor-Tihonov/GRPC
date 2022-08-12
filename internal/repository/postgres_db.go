@@ -19,7 +19,7 @@ type PRepository struct {
 }
 
 // CreateUser add user to db
-func (p *PRepository) CreateUser(ctx context.Context, person model.Person) (string, error) {
+func (p *PRepository) CreateUser(ctx context.Context, person *model.Person) (string, error) {
 	newID := uuid.New().String()
 	if person.Age < 0 || person.Age > 200 {
 		return "", fmt.Errorf("database error with create user: age less then 0 or more then 200")

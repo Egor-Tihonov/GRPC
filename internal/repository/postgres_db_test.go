@@ -39,7 +39,7 @@ func TestCreate(t *testing.T) {
 			Name:     "Ivan",
 			Works:    true,
 			Age:      19,
-			Password: "0",
+			Password: "ivan2001",
 		},
 		{
 			Name:     "query2",
@@ -72,11 +72,11 @@ func TestCreate(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	for _, p := range testValidData {
-		_, err := rps.rps.CreateUser(ctx, p)
+		_, err := rps.rps.CreateUser(ctx, &p)
 		require.NoError(t, err, "create error")
 	}
 	for _, p := range testNoValidData {
-		_, err := rps.rps.CreateUser(ctx, p)
+		_, err := rps.rps.CreateUser(ctx, &p)
 		require.Error(t, err, "create error")
 	}
 }

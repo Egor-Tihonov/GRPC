@@ -4,6 +4,7 @@ package repository
 import (
 	"context"
 	"fmt"
+
 	"github.com/Egor-Tihonov/GRPC/internal/model"
 
 	"github.com/google/uuid"
@@ -18,7 +19,7 @@ type MRepository struct {
 }
 
 // CreateUser add new user to db
-func (m *MRepository) CreateUser(ctx context.Context, person model.Person) (string, error) {
+func (m *MRepository) CreateUser(ctx context.Context, person *model.Person) (string, error) {
 	if person.Age < 0 || person.Age > 180 {
 		return "", fmt.Errorf("mongo repository: error with create, age must be more then 0 and less then 180")
 	}
