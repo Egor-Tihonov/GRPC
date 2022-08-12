@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"log"
-	"os"
 	"testing"
 
 	"github.com/Egor-Tihonov/GRPC/internal/model"
@@ -21,16 +20,6 @@ type Service struct { // Service new
 
 func NewService(newRps Repository) *Service { // create
 	return &Service{rps: newRps}
-}
-
-func TestMain(m *testing.M) {
-	pool, err := pgxpool.Connect(context.Background(), "postgresql://postgres:123@localhost:5432/person")
-	if err != nil {
-		log.Fatalf("Bad connection: %v", err)
-	}
-	Pool = pool
-	run := m.Run()
-	os.Exit(run)
 }
 
 func TestCreate(t *testing.T) {
