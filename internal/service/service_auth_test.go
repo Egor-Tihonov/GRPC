@@ -10,6 +10,7 @@ import (
 	"github.com/Egor-Tihonov/GRPC/internal/repository"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // NewServer create new server connection
@@ -51,9 +52,17 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestHashPassword(t *testing.T) {
-	_, err := hashingPassword("1234567890")
+	pass, err := hashingPassword("1234567890")
 	require.NoError(t, err, "")
 	_, err = hashingPassword("12")
+	require.Error(t, err, "")
+	incoming := []byte("1234567890")
+	existing := []byte(pass)
+	err = bcrypt.CompareHashAndPassword(existing, incoming)
+	require.NoError(t, err, "")
+	incoming = []byte("1234567891")
+	existing = []byte(pass)
+	err = bcrypt.CompareHashAndPassword(existing, incoming)
 	require.Error(t, err, "")
 }
 
